@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Countdown - Vedrana</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .current-time {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        
+        .countdown {
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .time-units {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .time-unit {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            min-width: 100px;
+        }
+        
+        .time-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .time-label {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .heart {
+            color: #ff69b4;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .floating-heart {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.6;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts">
+        <div class="floating-heart" style="left: 10%; animation-delay: 0s;">💕</div>
+        <div class="floating-heart" style="left: 20%; animation-delay: 2s;">❤️</div>
+        <div class="floating-heart" style="left: 30%; animation-delay: 4s;">💖</div>
+        <div class="floating-heart" style="left: 40%; animation-delay: 1s;">💗</div>
+        <div class="floating-heart" style="left: 50%; animation-delay: 3s;">💓</div>
+        <div class="floating-heart" style="left: 60%; animation-delay: 5s;">💕</div>
+        <div class="floating-heart" style="left: 70%; animation-delay: 2.5s;">❤️</div>
+        <div class="floating-heart" style="left: 80%; animation-delay: 4.5s;">💖</div>
+        <div class="floating-heart" style="left: 90%; animation-delay: 1.5s;">💗</div>
+    </div>
+    <div class="container">
+        <h1>💕❤️ Date Countdown with Vedrana ❤️💕</h1>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="v1.jpg" alt="Vedrana" style="max-width: 300px; border-radius: 20px; box-shadow: 0 8px 32px rgba(255, 105, 180, 0.5); border: 3px solid rgba(255, 255, 255, 0.3);">
+        </div>
+        
+        <div class="current-time">
+            <div>💖 Current Date & Time (CET) 💖</div>
+            <div id="currentTime" style="font-size: 1.2em; margin-top: 10px;"></div>
+        </div>
+        
+        <div class="countdown">
+            <div id="countdownMessage"></div>
+            <div class="time-units">
+                <div class="time-unit">
+                    <span class="time-value" id="days">0</span>
+                    <span class="time-label">💕 Days 💕</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="hours">0</span>
+                    <span class="time-label">💖 Hours 💖</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="minutes">0</span>
+                    <span class="time-label">💗 Minutes 💗</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="seconds">0</span>
+                    <span class="time-label">💓 Seconds 💓</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Target date: Thursday, January 15, 2026 at 14:00 CET
+        const targetDate = new Date('2026-01-15T14:00:00+01:00');
+        
+        function updateTime() {
+            // Get current time
+            const now = new Date();
+            
+            // Get CET time string for display
+            const options = {
+                timeZone: 'Europe/Paris',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleString('en-GB', options);
+            
+            // Calculate time remaining
+            const difference = targetDate - now;
+            
+            if (difference > 0) {
+                // Calculate days, hours, minutes, seconds
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                
+                // Update countdown display
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+                
+                // Create the message
+                let timeString = '';
+                if (days > 0) timeString += `${days} day${days !== 1 ? 's' : ''}, `;
+                if (hours > 0 || days > 0) timeString += `${hours} hour${hours !== 1 ? 's' : ''}, `;
+                if (minutes > 0 || hours > 0 || days > 0) timeString += `${minutes} minute${minutes !== 1 ? 's' : ''}, `;
+                timeString += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+                
+                document.getElementById('countdownMessage').innerHTML = 
+                    `<strong>💕 ${timeString} remains until your date with Vedrana 💕</strong>`;
+            } else {
+                document.getElementById('countdownMessage').innerHTML = 
+                    '<strong>💖💕❤️ It\'s time for your date with Vedrana! ❤️💕💖</strong>';
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+            }
+        }
+        
+        // Update immediately and then every second
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
